@@ -3,157 +3,1085 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test GitHub Pages</title>
+    <title>Tutor Linguistico Interattivo</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#3B82F6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Tutor Linguistico">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📚</text></svg>">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .message-user {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: white;
-            text-align: center;
-            padding: 50px;
-            margin: 0;
+            margin-left: auto;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
         }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: rgba(255,255,255,0.1);
-            padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
+        
+        .message-tutor {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            color: #374151;
+            border: 1px solid #e5e7eb;
         }
-        h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
+        
+        .message {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            margin: 8px 0;
+            word-wrap: break-word;
+            position: relative;
+            animation: slideIn 0.3s ease-out;
         }
-        .button {
-            background: #ff6b6b;
-            color: white;
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-container {
+            height: 500px;
+            overflow-y: auto;
+            padding: 16px;
+            background: linear-gradient(135deg, #fafbff, #f1f5f9);
+            scroll-behavior: smooth;
+        }
+        
+        .chat-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .input-container {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            border-radius: 0 0 16px 16px;
+        }
+        
+        .btn {
+            padding: 10px 16px;
+            border-radius: 12px;
             border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            border-radius: 25px;
             cursor: pointer;
-            margin: 10px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 8px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .typing {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            align-items: center;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #6b7280;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
             transition: all 0.3s ease;
         }
-        .button:hover {
-            transform: scale(1.05);
-            background: #ee5a5a;
+        
+        .card:hover {
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
         }
-        .chat-box {
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            padding: 20px;
-            border-radius: 15px;
-            margin: 20px 0;
-            text-align: left;
-            max-height: 300px;
-            overflow-y: auto;
+        
+        .feedback-item {
+            background: linear-gradient(135deg, #fefefe, #f8fafc);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
         }
-        .input-group {
+        
+        .feedback-item:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .goal-item {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            align-items: center;
+            gap: 8px;
         }
-        input {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
+        
+        .goal-item:hover {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            transform: translateX(4px);
         }
-        .status {
-            background: rgba(76, 175, 80, 0.2);
-            padding: 10px;
-            border-radius: 10px;
-            margin: 10px 0;
+        
+        .stat-card {
+            text-align: center;
+            padding: 16px;
+            background: linear-gradient(135deg, #fafbff, #f0f4ff);
+            border-radius: 12px;
+            border: 1px solid #e0e7ff;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            background: linear-gradient(135deg, #f0f4ff, #e0e7ff);
+            transform: scale(1.02);
+        }
+        
+        .language-flag {
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .level-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-responsive {
+            padding: 8px;
+        }
+        
+        @media (min-width: 640px) {
+            .mobile-responsive {
+                padding: 16px;
+            }
+        }
+        
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>🎉 GitHub Pages Funziona!</h1>
+<body class="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-screen">
+    <div class="container mx-auto mobile-responsive max-w-7xl">
         
-        <div class="status">
-            <strong>✅ Status:</strong> <span id="status">Connesso e funzionante</span><br>
-            <strong>🕐 Tempo:</strong> <span id="time">--:--:--</span><br>
-            <strong>🌐 URL:</strong> <span id="url">Caricamento...</span>
+        <!-- Header -->
+        <div class="card header-gradient p-6 mb-6 overflow-hidden relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-10 transform -skew-x-12"></div>
+            <div class="relative z-10">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="language-flag" id="language-flag">🇪🇸</div>
+                        <div>
+                            <h1 class="text-2xl lg:text-3xl font-bold">Tutor Linguistico Interattivo</h1>
+                            <p class="opacity-90" id="language-subtitle">Migliora le tue competenze in Español</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                        <select id="language-select" class="px-4 py-2 border-0 rounded-lg text-gray-700 font-medium shadow-lg focus:ring-2 focus:ring-white focus:ring-opacity-50">
+                            <option value="spanish">🇪🇸 Español</option>
+                            <option value="french">🇫🇷 Français</option>
+                            <option value="german">🇩🇪 Deutsch</option>
+                            <option value="english">🇺🇸 English</option>
+                            <option value="italian">🇮🇹 Italiano</option>
+                            <option value="portuguese">🇧🇷 Português</option>
+                            <option value="japanese">🇯🇵 日本語</option>
+                        </select>
+                        
+                        <div class="flex items-center gap-3">
+                            <span class="text-sm opacity-75">Livello:</span>
+                            <span id="user-level" class="level-badge bg-green-100 text-green-800">
+                                Principiante
+                            </span>
+                        </div>
+                        
+                        <button id="mode-toggle" class="btn bg-white bg-opacity-20 text-white border border-white border-opacity-30 hover:bg-opacity-30">
+                            💬 Chat Informale
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <p>Se vedi questo messaggio, GitHub Pages funziona correttamente!</p>
-        
-        <button class="button" onclick="testFunction()">🧪 Test JavaScript</button>
-        <button class="button" onclick="showAlert()">🔔 Test Alert</button>
-        
-        <div class="chat-box" id="output">
-            <div><strong>Sistema:</strong> GitHub Pages è attivo e funzionante!</div>
-            <div><strong>Test:</strong> Tutti i componenti di base funzionano correttamente.</div>
-        </div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <!-- Chat Area -->
+            <div class="lg:col-span-2 order-1">
+                <div class="card overflow-hidden">
+                    <div class="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <div class="text-blue-500 text-xl">💬</div>
+                                <span class="font-semibold text-gray-800">Conversazione</span>
+                                <div id="typing-status" class="text-xs text-gray-500 opacity-0 transition-opacity">
+                                    Il tutor sta scrivendo...
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-500 font-medium">
+                                <span class="hidden sm:inline">Sessione: </span><span id="session-time">0:00</span>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="input-group">
-            <input type="text" id="testInput" placeholder="Scrivi qualcosa per testare..." />
-            <button class="button" onclick="addMessage()">Invia</button>
-        </div>
+                    <div class="chat-container" id="chat-container">
+                        <div class="message message-tutor">
+                            <div class="font-medium">¡Hola! Soy tu tutor de español. ¿De qué te gustaría hablar hoy?</div>
+                            <div class="text-xs opacity-70 mt-2">Tutor • Ora</div>
+                        </div>
+                    </div>
 
-        <div style="margin-top: 30px; font-size: 14px; opacity: 0.8;">
-            <p>🔧 <strong>Prossimo step:</strong> Se questo funziona, possiamo passare al tutor completo!</p>
+                    <div class="input-container">
+                        <input 
+                            type="text" 
+                            id="message-input"
+                            placeholder="Scrivi in Español..."
+                            class="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                        />
+                        <button id="send-button" class="btn btn-primary">
+                            <span id="send-icon">📤</span>
+                            <span class="hidden sm:inline">Invia</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Panel -->
+            <div class="lg:col-span-1 order-3 lg:order-2">
+                <div class="card p-6 h-[580px] overflow-y-auto">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-orange-500 text-xl">🎯</span>
+                        <h3 class="font-semibold text-gray-800">Feedback in Tempo Reale</h3>
+                    </div>
+                    
+                    <div id="feedback-container">
+                        <div class="text-center py-8 text-gray-500">
+                            <div class="text-4xl mb-3">🚀</div>
+                            <p class="text-sm">Inizia a chattare per ricevere feedback personalizzato!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals and Progress -->>
+            <div class="lg:col-span-1 order-2 lg:order-3">
+                <div class="space-y-6">
+                    
+                    <!-- Learning Goals -->
+                    <div class="card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-blue-500 text-xl">🎯</span>
+                                <h3 class="font-semibold text-gray-800">Obiettivi di Apprendimento</h3>
+                            </div>
+                            <button class="text-blue-500 hover:text-blue-600 text-sm font-medium transition-colors" onclick="addGoal()">
+                                ➕ Aggiungi
+                            </button>
+                        </div>
+                        
+                        <div id="goals-container">
+                            <div class="goal-item">
+                                <span class="text-yellow-500">⭐</span>
+                                <span class="text-sm text-gray-700 flex-1">Padroneggiare ser vs estar</span>
+                                <button onclick="removeGoal(this)" class="text-red-400 hover:text-red-600 transition-colors">✕</button>
+                            </div>
+                            <div class="goal-item">
+                                <span class="text-yellow-500">⭐</span>
+                                <span class="text-sm text-gray-700 flex-1">Espandere vocabolario culinario</span>
+                                <button onclick="removeGoal(this)" class="text-red-400 hover:text-red-600 transition-colors">✕</button>
+                            </div>
+                            <div class="goal-item">
+                                <span class="text-yellow-500">⭐</span>
+                                <span class="text-sm text-gray-700 flex-1">Migliorare pronuncia</span>
+                                <button onclick="removeGoal(this)" class="text-red-400 hover:text-red-600 transition-colors">✕</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progress -->
+                    <div class="card p-6">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-green-500 text-xl">📊</span>
+                            <h3 class="font-semibold text-gray-800">Progressi</h3>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm text-gray-600 font-medium">Vocabolario</span>
+                                    <span class="text-sm font-semibold text-blue-600" id="vocab-progress">65%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-gradient-to-r from-blue-400 to-blue-600" style="width: 65%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm text-gray-600 font-medium">Grammatica</span>
+                                    <span class="text-sm font-semibold text-green-600" id="grammar-progress">45%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-gradient-to-r from-green-400 to-green-600" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-2">
+                                    <span class="text-sm text-gray-600 font-medium">Conversazione</span>
+                                    <span class="text-sm font-semibold text-purple-600" id="conversation-progress">70%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill bg-gradient-to-r from-purple-400 to-purple-600" style="width: 70%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Session Statistics -->
+                    <div class="card p-6">
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="text-purple-500 text-xl">📈</span>
+                            <h3 class="font-semibold text-gray-800">Statistiche Sessione</h3>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="stat-card">
+                                <div class="text-2xl font-bold text-blue-500 mb-1" id="message-count">0</div>
+                                <div class="text-xs text-gray-500 font-medium">Messaggi</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="text-2xl font-bold text-green-500 mb-1" id="word-count">0</div>
+                                <div class="text-xs text-gray-500 font-medium">Parole Nuove</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="text-2xl font-bold text-orange-500 mb-1" id="feedback-count">0</div>
+                                <div class="text-xs text-gray-500 font-medium">Feedback</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="text-2xl font-bold text-purple-500 mb-1" id="accuracy-score">95%</div>
+                                <div class="text-xs text-gray-500 font-medium">Precisione</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Test basic JavaScript functionality
+        // Global state
+        let currentLanguage = 'spanish';
         let messageCount = 0;
+        let wordCount = 0;
+        let feedbackCount = 0;
+        let sessionStart = Date.now();
+        let isTyping = false;
+        let currentMode = 'casual';
+        let userLevel = 'beginner';
 
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('time').textContent = now.toLocaleTimeString();
+        // Language configurations
+        const languages = {
+            spanish: {
+                name: 'Español',
+                flag: '🇪🇸',
+                greeting: '¡Hola! Soy tu tutor de español. ¿De qué te gustaría hablar hoy?',
+                responses: [
+                    '¡Muy bien! Me gusta cómo te expresas. ¿Puedes contarme más sobre eso?',
+                    'Interesante. En español también podríamos decir... ¿Conoces otras formas de expresar esto?',
+                    '¡Excelente! Tu español está mejorando mucho. ¿Qué otros temas te interesan?',
+                    'Perfecto uso del vocabulario. ¿Te gustaría practicar algún tiempo verbal específico?',
+                    '¡Muy natural! Me encanta ver tu progreso. ¿Hay algo que te resulta difícil?'
+                ],
+                goals: [
+                    'Padroneggiare ser vs estar',
+                    'Espandere vocabolario culinario', 
+                    'Migliorare pronuncia',
+                    'Praticare tempi del passato'
+                ]
+            },
+            french: {
+                name: 'Français',
+                flag: '🇫🇷',
+                greeting: 'Bonjour! Je suis votre tuteur de français. De quoi aimeriez-vous parler aujourd\'hui?',
+                responses: [
+                    'C\'est très bien! J\'aime votre façon de vous exprimer. Pouvez-vous m\'en dire plus?',
+                    'Intéressant. En français, nous pourrions aussi dire... Connaissez-vous d\'autres façons?',
+                    'Excellent! Votre français s\'améliore beaucoup. Quels autres sujets vous intéressent?',
+                    'Parfait! Votre grammaire est très correcte. Continuez comme ça!',
+                    'Très naturel! J\'adore vos progrès. Y a-t-il quelque chose de difficile pour vous?'
+                ],
+                goals: [
+                    'Migliorare pronuncia delle vocali',
+                    'Padroneggiare accordi aggettivi',
+                    'Espandere vocabolario familiare',
+                    'Praticare tempi del passato'
+                ]
+            },
+            german: {
+                name: 'Deutsch',
+                flag: '🇩🇪',
+                greeting: 'Hallo! Ich bin Ihr Deutsch-Tutor. Worüber möchten Sie heute sprechen?',
+                responses: [
+                    'Das ist sehr gut! Mir gefällt, wie Sie sich ausdrücken. Können Sie mir mehr erzählen?',
+                    'Interessant. Auf Deutsch könnten wir auch sagen... Kennen Sie andere Wege?',
+                    'Ausgezeichnet! Ihr Deutsch wird viel besser. Was interessiert Sie noch?',
+                    'Perfekt! Ihre Grammatik ist sehr korrekt. Machen Sie weiter so!',
+                    'Sehr natürlich! Ich liebe Ihre Fortschritte. Gibt es etwas Schwieriges?'
+                ],
+                goals: [
+                    'Memorizzare articoli determinativi',
+                    'Praticare ordine delle parole',
+                    'Espandere vocabolario professionale',
+                    'Migliorare declinazioni'
+                ]
+            },
+            english: {
+                name: 'English',
+                flag: '🇺🇸',
+                greeting: 'Hello! I\'m your English tutor. What would you like to talk about today?',
+                responses: [
+                    'That\'s very good! I like how you express yourself. Can you tell me more about that?',
+                    'Interesting. In English we could also say... Do you know other ways to express this?',
+                    'Excellent! Your English is improving a lot. What other topics interest you?',
+                    'Perfect! Your grammar is very correct. Keep it up!',
+                    'Very natural! I love your progress. Is there anything challenging for you?'
+                ],
+                goals: [
+                    'Migliorare pronuncia',
+                    'Espandere vocabolario accademico',
+                    'Praticare phrasal verbs',
+                    'Perfezionare tempi verbali'
+                ]
+            },
+            italian: {
+                name: 'Italiano',
+                flag: '🇮🇹',
+                greeting: 'Ciao! Sono il tuo tutor di italiano. Di cosa vorresti parlare oggi?',
+                responses: [
+                    'Molto bene! Mi piace come ti esprimi. Puoi dirmi di più?',
+                    'Interessante. In italiano potremmo anche dire... Conosci altri modi?',
+                    'Eccellente! Il tuo italiano sta migliorando molto. Che altri argomenti ti interessano?',
+                    'Perfetto! La tua grammatica è molto corretta. Continua così!',
+                    'Molto naturale! Adoro i tuoi progressi. C\'è qualcosa di difficile?'
+                ],
+                goals: [
+                    'Padroneggiare tempi del passato',
+                    'Migliorare uso preposizioni',
+                    'Espandere vocabolario culinario',
+                    'Praticare congiuntivo'
+                ]
+            },
+            portuguese: {
+                name: 'Português',
+                flag: '🇧🇷',
+                greeting: 'Olá! Sou seu tutor de português. Do que gostaria de falar hoje?',
+                responses: [
+                    'Muito bom! Gosto de como você se expressa. Pode me falar mais sobre isso?',
+                    'Interessante. Em português também poderíamos dizer... Você conhece outras formas?',
+                    'Excelente! Seu português está melhorando muito. Que outros assuntos te interessam?',
+                    'Perfeito! Sua gramática está muito correta. Continue assim!',
+                    'Muito natural! Adoro seu progresso. Há algo difícil para você?'
+                ],
+                goals: [
+                    'Distinguere ser vs estar',
+                    'Migliorare pronuncia nasale',
+                    'Espandere vocabolario brasiliano',
+                    'Praticare tempi del futuro'
+                ]
+            },
+            japanese: {
+                name: '日本語',
+                flag: '🇯🇵',
+                greeting: 'こんにちは！日本語のチューターです。今日は何について話したいですか？',
+                responses: [
+                    'とても良いですね！あなたの表現方法が好きです。もっと教えてくれませんか？',
+                    '面白いですね。日本語では他の言い方もあります...他の方法を知っていますか？',
+                    '素晴らしい！あなたの日本語がとても上達しています。他にどんな話題に興味がありますか？',
+                    '完璧です！文法がとても正しいです。そのまま続けてください！',
+                    'とても自然です！あなたの進歩が大好きです。何か難しいことはありますか？'
+                ],
+                goals: [
+                    'Memorizzare kanji di base',
+                    'Praticare forme di cortesia',
+                    'Migliorare pronuncia',
+                    'Espandere vocabolario quotidiano'
+                ]
+            }
+        };
+
+        // DOM elements
+        const languageSelect = document.getElementById('language-select');
+        const languageFlag = document.getElementById('language-flag');
+        const languageSubtitle = document.getElementById('language-subtitle');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const chatContainer = document.getElementById('chat-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const messageCountEl = document.getElementById('message-count');
+        const wordCountEl = document.getElementById('word-count');
+        const feedbackCountEl = document.getElementById('feedback-count');
+        const sessionTimeEl = document.getElementById('session-time');
+        const userLevelEl = document.getElementById('user-level');
+        const modeToggle = document.getElementById('mode-toggle');
+        const typingStatus = document.getElementById('typing-status');
+        const sendIcon = document.getElementById('send-icon');
+
+        // Initialize app
+        function init() {
+            updateLanguageDisplay();
+            updateTimer();
+            setupEventListeners();
+            loadGoalsForLanguage();
         }
 
-        function updateURL() {
-            document.getElementById('url').textContent = window.location.href;
-        }
-
-        function testFunction() {
-            const output = document.getElementById('output');
-            messageCount++;
-            output.innerHTML += `<div><strong>Test ${messageCount}:</strong> JavaScript funziona perfettamente! ✅</div>`;
-            output.scrollTop = output.scrollHeight;
-        }
-
-        function showAlert() {
-            alert('🎉 Perfetto! Gli alert funzionano. GitHub Pages è completamente operativo!');
-        }
-
-        function addMessage() {
-            const input = document.getElementById('testInput');
-            const output = document.getElementById('output');
+        function setupEventListeners() {
+            languageSelect.addEventListener('change', changeLanguage);
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
             
-            if (input.value.trim()) {
-                messageCount++;
-                output.innerHTML += `<div><strong>Tu:</strong> ${input.value}</div>`;
-                output.innerHTML += `<div><strong>Sistema:</strong> Messaggio ricevuto! Tutto funziona! 🎯</div>`;
-                input.value = '';
-                output.scrollTop = output.scrollHeight;
+            messageInput.addEventListener('input', function() {
+                if (this.value.length > 0) {
+                    sendIcon.textContent = '🚀';
+                } else {
+                    sendIcon.textContent = '📤';
+                }
+            });
+
+            modeToggle.addEventListener('click', toggleMode);
+        }
+
+        function changeLanguage() {
+            currentLanguage = languageSelect.value;
+            updateLanguageDisplay();
+            loadGoalsForLanguage();
+            
+            // Clear chat and add welcome message
+            chatContainer.innerHTML = '';
+            addMessage(languages[currentLanguage].greeting, 'tutor');
+        }
+
+        function updateLanguageDisplay() {
+            const lang = languages[currentLanguage];
+            languageFlag.textContent = lang.flag;
+            languageSubtitle.textContent = `Migliora le tue competenze in ${lang.name}`;
+            messageInput.placeholder = `Scrivi in ${lang.name}...`;
+        }
+
+        function loadGoalsForLanguage() {
+            const goalsContainer = document.getElementById('goals-container');
+            const goals = languages[currentLanguage].goals;
+            
+            goalsContainer.innerHTML = '';
+            goals.forEach(goal => {
+                const goalDiv = document.createElement('div');
+                goalDiv.className = 'goal-item';
+                goalDiv.innerHTML = `
+                    <span class="text-yellow-500">⭐</span>
+                    <span class="text-sm text-gray-700 flex-1">${goal}</span>
+                    <button onclick="removeGoal(this)" class="text-red-400 hover:text-red-600 transition-colors">✕</button>
+                `;
+                goalsContainer.appendChild(goalDiv);
+            });
+        }
+
+        function toggleMode() {
+            currentMode = currentMode === 'casual' ? 'structured' : 'casual';
+            modeToggle.innerHTML = currentMode === 'casual' 
+                ? '💬 Chat Informale' 
+                : '📚 Lezione Strutturata';
+        }
+
+        function addMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'font-medium';
+            contentDiv.textContent = text;
+            
+            const timeDiv = document.createElement('div');
+            timeDiv.className = 'text-xs opacity-70 mt-2';
+            timeDiv.textContent = `${type === 'user' ? 'Tu' : 'Tutor'} • ${new Date().toLocaleTimeString()}`;
+            
+            messageDiv.appendChild(contentDiv);
+            messageDiv.appendChild(timeDiv);
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message message-tutor typing';
+            typingDiv.id = 'typing-indicator';
+            
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'typing-dot';
+                typingDiv.appendChild(dot);
+            }
+            
+            chatContainer.appendChild(typingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            // Show typing status
+            typingStatus.style.opacity = '1';
+        }
+
+        function hideTyping() {
+            const typingIndicator = document.getElementById('typing-indicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+            typingStatus.style.opacity = '0';
+        }
+
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message || isTyping) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            const msgToAnalyze = message;
+            messageInput.value = '';
+            sendIcon.textContent = '📤';
+            
+            // Update stats
+            messageCount++;
+            const words = msgToAnalyze.split(/\s+/).filter(word => word.length > 2);
+            wordCount += words.length;
+            messageCountEl.textContent = messageCount;
+            wordCountEl.textContent = wordCount;
+
+            // Analyze message and show feedback
+            analyzeMessage(msgToAnalyze);
+
+            // Show typing and generate response
+            isTyping = true;
+            sendButton.disabled = true;
+            showTyping();
+
+            const delay = 1500 + Math.random() * 2000; // 1.5-3.5 seconds
+            setTimeout(() => {
+                hideTyping();
+                const responses = languages[currentLanguage].responses;
+                const response = responses[Math.floor(Math.random() * responses.length)];
+                addMessage(response, 'tutor');
+                
+                // Update user level based on message complexity
+                updateUserLevel(msgToAnalyze);
+                
+                isTyping = false;
+                sendButton.disabled = false;
+            }, delay);
+        }
+
+        function analyzeMessage(message) {
+            const feedback = [];
+            const errors = [];
+            
+            // Language-specific analysis
+            if (currentLanguage === 'spanish') {
+                if (message.match(/\b(soy|es|está|estoy|son|están)\b/i)) {
+                    feedback.push('✅ Ottimo uso dei verbi ser/estar!');
+                }
+                if (message.match(/\b(por|para)\b/i)) {
+                    feedback.push('✅ Perfetto! Uso corretto delle preposizioni.');
+                }
+                if (message.match(/\b(muy|mucho|muchos|muchas)\b/i)) {
+                    feedback.push('✅ Eccellente uso degli intensificatori!');
+                }
+                if (message.match(/\b(me gusta|te gusta|le gusta)\b/i)) {
+                    feedback.push('✅ Fantastico! Verbo "gustar" usato correttamente.');
+                }
+                if (message.length > 15 && !message.match(/[¿¡]/)) {
+                    errors.push('💡 Suggerimento: Ricorda di usare ¿ e ¡ nelle domande ed esclamazioni spagnole');
+                }
+                if (message.match(/\b(hola|buenos días|buenas tardes|buenas noches)\b/i)) {
+                    feedback.push('✅ Ottimi saluti! Molto cortese.');
+                }
+            } else if (currentLanguage === 'french') {
+                if (message.match(/\b(je suis|tu es|il est|elle est|nous sommes|vous êtes|ils sont)\b/i)) {
+                    feedback.push('✅ Excellente conjugaison du verbe être!');
+                }
+                if (message.match(/\b(le|la|les|un|une|des)\b/i)) {
+                    feedback.push('✅ Parfait usage des articles!');
+                }
+                if (message.match(/\b(très|beaucoup|assez|trop)\b/i)) {
+                    feedback.push('✅ Très bien! Bonne utilisation des adverbes d\'intensité.');
+                }
+                if (message.match(/\b(bonjour|bonsoir|salut|au revoir)\b/i)) {
+                    feedback.push('✅ Excellentes formules de politesse!');
+                }
+            } else if (currentLanguage === 'english') {
+                if (message.match(/\b(am|is|are|was|were|been)\b/i)) {
+                    feedback.push('✅ Great use of the verb "to be"!');
+                }
+                if (message.match(/\b(very|really|quite|extremely|incredibly)\b/i)) {
+                    feedback.push('✅ Excellent use of adverbs for emphasis!');
+                }
+                if (message.match(/\b(hello|hi|good morning|good evening|goodbye)\b/i)) {
+                    feedback.push('✅ Nice greetings! Very polite.');
+                }
+                if (message.match(/\b(the|a|an)\b/i)) {
+                    feedback.push('✅ Perfect article usage!');
+                }
+            } else if (currentLanguage === 'german') {
+                if (message.match(/\b(ich bin|du bist|er ist|sie ist|wir sind|ihr seid|sie sind)\b/i)) {
+                    feedback.push('✅ Ausgezeichnet! Perfekte Konjugation von "sein".');
+                }
+                if (message.match(/\b(der|die|das|ein|eine)\b/i)) {
+                    feedback.push('✅ Sehr gut! Korrekte Verwendung der Artikel.');
+                }
+                if (message.match(/\b(hallo|guten tag|guten morgen|guten abend|auf wiedersehen)\b/i)) {
+                    feedback.push('✅ Sehr höfliche Begrüßungen!');
+                }
+            } else if (currentLanguage === 'italian') {
+                if (message.match(/\b(sono|sei|è|siamo|siete|sono)\b/i)) {
+                    feedback.push('✅ Perfetto! Coniugazione corretta del verbo "essere".');
+                }
+                if (message.match(/\b(molto|abbastanza|troppo|davvero)\b/i)) {
+                    feedback.push('✅ Ottimo uso degli avverbi!');
+                }
+                if (message.match(/\b(ciao|buongiorno|buonasera|arrivederci)\b/i)) {
+                    feedback.push('✅ Saluti perfetti! Molto educato.');
+                }
+            } else if (currentLanguage === 'portuguese') {
+                if (message.match(/\b(sou|é|está|estou|são|estão)\b/i)) {
+                    feedback.push('✅ Ótimo! Uso correto dos verbos ser/estar.');
+                }
+                if (message.match(/\b(muito|bastante|demais)\b/i)) {
+                    feedback.push('✅ Perfeito uso dos advérbios!');
+                }
+                if (message.match(/\b(olá|oi|bom dia|boa tarde|boa noite|tchau)\b/i)) {
+                    feedback.push('✅ Saudações excelentes!');
+                }
+            } else if (currentLanguage === 'japanese') {
+                if (message.match(/です|だ|である/)) {
+                    feedback.push('✅ 素晴らしい！正しい丁寧語の使用です。');
+                }
+                if (message.match(/は|が|を|に|で|と/)) {
+                    feedback.push('✅ とても良い！助詞の使い方が正確です。');
+                }
+                if (message.match(/こんにちは|おはよう|こんばんは|さようなら/)) {
+                    feedback.push('✅ 完璧な挨拶です！');
+                }
+            }
+
+            // General feedback
+            if (message.length > 30) {
+                feedback.push('✅ Ottima lunghezza della frase! Molto articolato.');
+            }
+            if (message.split(' ').length > 8) {
+                feedback.push('✅ Eccellente complessità della frase!');
+            }
+
+            if (feedback.length === 0 && errors.length === 0) {
+                feedback.push('👍 Continua così! Stai facendo progressi costanti.');
+            }
+
+            // Show feedback
+            if (feedback.length > 0 || errors.length > 0) {
+                showFeedback(message, feedback, errors);
+                feedbackCount++;
+                feedbackCountEl.textContent = feedbackCount;
             }
         }
 
-        // Initialize
-        updateTime();
-        updateURL();
-        setInterval(updateTime, 1000);
+        function showFeedback(message, feedback, errors) {
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback-item';
+            
+            // Clear placeholder if it exists
+            if (feedbackContainer.children.length === 1 && 
+                feedbackContainer.children[0].textContent.includes('Inizia a chattare')) {
+                feedbackContainer.innerHTML = '';
+            }
+            
+            const messagePreview = document.createElement('p');
+            messagePreview.className = 'text-xs text-gray-500 mb-3 font-medium';
+            messagePreview.textContent = `"${message.length > 40 ? message.substring(0, 40) + '...' : message}"`;
+            feedbackDiv.appendChild(messagePreview);
 
-        // Test on load
-        window.addEventListener('load', function() {
-            console.log('✅ GitHub Pages caricato con successo!');
-            document.getElementById('status').textContent = 'Tutto operativo!';
+            // Add positive feedback
+            feedback.forEach(fb => {
+                const fbDiv = document.createElement('div');
+                fbDiv.className = 'flex items-start gap-2 mb-2';
+                fbDiv.innerHTML = `
+                    <span class="text-green-500 text-sm">✅</span>
+                    <p class="text-sm text-green-700 font-medium">${fb}</p>
+                `;
+                feedbackDiv.appendChild(fbDiv);
+            });
+
+            // Add corrections/suggestions
+            errors.forEach(error => {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'flex items-start gap-2 mb-2';
+                errorDiv.innerHTML = `
+                    <span class="text-orange-500 text-sm">💡</span>
+                    <p class="text-sm text-orange-700 font-medium">${error}</p>
+                `;
+                feedbackDiv.appendChild(errorDiv);
+            });
+
+            feedbackContainer.appendChild(feedbackDiv);
+            
+            // Keep only last 6 feedback items
+            while (feedbackContainer.children.length > 6) {
+                feedbackContainer.removeChild(feedbackContainer.firstChild);
+            }
+            
+            feedbackContainer.scrollTop = feedbackContainer.scrollHeight;
+        }
+
+        function updateUserLevel(message) {
+            const words = message.split(/\s+/);
+            const complexity = words.length;
+            
+            if (complexity > 20 && messageCount > 10) {
+                if (userLevel !== 'advanced') {
+                    userLevel = 'advanced';
+                    userLevelEl.textContent = 'Avanzato';
+                    userLevelEl.className = 'level-badge bg-red-100 text-red-800';
+                    showLevelUpNotification('Avanzato');
+                }
+            } else if (complexity > 10 && messageCount > 5) {
+                if (userLevel === 'beginner') {
+                    userLevel = 'intermediate';
+                    userLevelEl.textContent = 'Intermedio';
+                    userLevelEl.className = 'level-badge bg-yellow-100 text-yellow-800';
+                    showLevelUpNotification('Intermedio');
+                }
+            }
+        }
+
+        function showLevelUpNotification(level) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🎉</span>
+                    <div>
+                        <div class="font-bold">Livello aumentato!</div>
+                        <div class="text-sm">Ora sei a livello ${level}</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - sessionStart) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            sessionTimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function addGoal() {
+            const goal = prompt('Inserisci un nuovo obiettivo di apprendimento:');
+            if (goal && goal.trim()) {
+                const goalsContainer = document.getElementById('goals-container');
+                const goalDiv = document.createElement('div');
+                goalDiv.className = 'goal-item';
+                goalDiv.innerHTML = `
+                    <span class="text-yellow-500">⭐</span>
+                    <span class="text-sm text-gray-700 flex-1">${goal.trim()}</span>
+                    <button onclick="removeGoal(this)" class="text-red-400 hover:text-red-600 transition-colors">✕</button>
+                `;
+                goalsContainer.appendChild(goalDiv);
+            }
+        }
+
+        function removeGoal(button) {
+            button.parentElement.remove();
+        }
+
+        // Simulate progress updates
+        function updateProgress() {
+            const vocabEl = document.getElementById('vocab-progress');
+            const grammarEl = document.getElementById('grammar-progress');
+            const conversationEl = document.getElementById('conversation-progress');
+            
+            // Gradually increase progress based on activity
+            if (messageCount > 0) {
+                const vocabProgress = Math.min(95, 65 + Math.floor(messageCount * 1.5));
+                const grammarProgress = Math.min(90, 45 + Math.floor(feedbackCount * 2));
+                const conversationProgress = Math.min(98, 70 + Math.floor(messageCount * 1.2));
+                
+                vocabEl.textContent = vocabProgress + '%';
+                grammarEl.textContent = grammarProgress + '%';
+                conversationEl.textContent = conversationProgress + '%';
+                
+                // Update progress bars
+                document.querySelector('.progress-fill.bg-gradient-to-r.from-blue-400').style.width = vocabProgress + '%';
+                document.querySelector('.progress-fill.bg-gradient-to-r.from-green-400').style.width = grammarProgress + '%';
+                document.querySelector('.progress-fill.bg-gradient-to-r.from-purple-400').style.width = conversationProgress + '%';
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            init();
+            
+            // Update timer every second
+            setInterval(updateTimer, 1000);
+            
+            // Update progress every 5 seconds
+            setInterval(updateProgress, 5000);
+            
+            console.log('🎯 Tutor Linguistico Interattivo caricato con successo!');
         });
 
-        // Test keyboard input
-        document.getElementById('testInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                addMessage();
+        // Add some fun Easter eggs
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.code);
+            if (konamiCode.length > 10) konamiCode.shift();
+            
+            if (konamiCode.join(',') === konamiSequence.join(',')) {
+                addMessage('🎮 Codice Konami attivato! Modalità Poliglotta sbloccata! Ora puoi imparare tutte le lingue contemporaneamente!', 'tutor');
+                konamiCode = [];
             }
         });
+
+        // Service Worker for PWA functionality (optional)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registrato con successo:', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registrazione fallita:', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
